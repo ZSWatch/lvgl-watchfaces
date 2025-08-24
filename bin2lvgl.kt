@@ -462,21 +462,21 @@ fun extractComponents(data: ByteArray, name: String, wd: Int = 240, ht: Int = 24
 
                 if (id == 0x0d) {
                     faceItems +=
-                            "    lv_img_set_pivot(face_${name}_${x}_${clt}, $aOff, ${ySz - aOff});\n"
+                            "    lv_image_set_pivot(face_${name}_${x}_${clt}, $aOff, ${ySz - aOff});\n"
                     if (lan == 1) {
                         // hour hand
                         lvUpdateTime +=
-                                "    lv_img_set_angle(face_${name}_${x}_${clt}, hour * 300 + (minute * 5));\n"
+                                "    lv_image_set_rotation(face_${name}_${x}_${clt}, hour * 300 + (minute * 5));\n"
                     }
                     if (lan == 17) {
                         // minute hand
                         lvUpdateTime +=
-                                "    lv_img_set_angle(face_${name}_${x}_${clt}, minute * 60);\n"
+                                "    lv_image_set_rotation(face_${name}_${x}_${clt}, minute * 60);\n"
                     }
                     if (lan == 33) {
                         // second hand
                         lvUpdateTime +=
-                                "    lv_img_set_angle(face_${name}_${x}_${clt}, second * 60);\n"
+                                "    lv_image_set_rotation(face_${name}_${x}_${clt}, second * 60);\n"
                     }
                 }
             }
@@ -500,7 +500,7 @@ fun extractComponents(data: ByteArray, name: String, wd: Int = 240, ht: Int = 24
                             lvUpdateTime +=
 """
     if (getPlaceValue(last_${unit}, $place) != getPlaceValue(${unit}, $place)) {
-        lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);
+        lv_image_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);
     }
 """
                         timeUnits.add(unit)
@@ -508,7 +508,7 @@ fun extractComponents(data: ByteArray, name: String, wd: Int = 240, ht: Int = 24
                     }
                     2 -> {
                         lvUpdateBattery +=
-                                "    lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);\n"
+                                "    lv_image_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);\n"
                         if (lvT == "(battery / 100) % 10") {
                             lvUpdateBattery +=
                                     "    if (battery < 100)\n    {\n        lv_obj_add_flag(face_${name}_${x}_${clt}, LV_OBJ_FLAG_HIDDEN);\n    } else {\n        lv_obj_clear_flag(face_${name}_${x}_${clt}, LV_OBJ_FLAG_HIDDEN);\n    }\n"
@@ -521,38 +521,38 @@ fun extractComponents(data: ByteArray, name: String, wd: Int = 240, ht: Int = 24
                         lvUpdateActivity +=
 """
     if (getPlaceValue(last_${unit}, $place) != getPlaceValue(${unit}, $place)) {
-        lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);
+        lv_image_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);
     }
 """
                         activityUnits.add(unit)
                     }
                     4 -> {
                         lvUpdateHealth +=
-                                "    lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);\n"
+                                "    lv_image_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);\n"
                     }
                     5 -> {
                         lvUpdateWeather +=
-                                "    lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);\n"
+                                "    lv_image_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);\n"
                     }
                 }
             }
             if (id == 0x17) {
                 lvUpdateWeather +=
-                        "    lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_weather[icon % 8]);\n"
+                        "    lv_image_set_src(face_${name}_${x}_${clt}, face_${name}_weather[icon % 8]);\n"
             }
             if (id == 0x0b && aOff == 0) {
                 lvUpdateBattery +=
-                        "    lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[(battery / (100 / ${cmp})) % ${cmp}]);\n"
+                        "    lv_image_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[(battery / (100 / ${cmp})) % ${cmp}]);\n"
             }
             if (id == 0x0a) {
                 lvUpdateConnection +=
-                        "    lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_connection[(connection ? 0 : 1) % 2]);\n"
+                        "    lv_image_set_src(face_${name}_${x}_${clt}, face_${name}_connection[(connection ? 0 : 1) % 2]);\n"
             }
             if (id == 0x08) {
                 lvUpdateTime +=
                         "    if (mode)\n    {\n        lv_obj_add_flag(face_${name}_${x}_${clt}, LV_OBJ_FLAG_HIDDEN);\n    } else {\n        lv_obj_clear_flag(face_${name}_${x}_${clt}, LV_OBJ_FLAG_HIDDEN);\n    }\n"
                 lvUpdateTime +=
-                        "    lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[(am ? 0 : 1) % 2]);\n"
+                        "    lv_image_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[(am ? 0 : 1) % 2]);\n"
             }
 
             if (id == 0x0d && (lan == 17 || lan == 33)) {
@@ -765,7 +765,7 @@ const LV_ATTRIBUTE_MEM_ALIGN uint8_t face_${name}_${asset}_data_${a}[] = {
                                 rgb565[j * 2].toInt() and 0xFF
                         )
                 if (tr) {
-                    hex += String.format("0x%02X,", alpha and 0xFF)
+                    hex = String.format("0x%02X,", alpha and 0xFF) + hex
                 }
                 if (z % 32 == 0 && z != 0) {
                     hex += "\n\t"
@@ -781,15 +781,15 @@ const LV_ATTRIBUTE_MEM_ALIGN uint8_t face_${name}_${asset}_data_${a}[] = {
 
         val color =
                 if (tr) {
-                    "LV_IMG_CF_TRUE_COLOR_ALPHA"
+                    "LV_COLOR_FORMAT_NATIVE_WITH_ALPHA"
                 } else {
-                    "LV_IMG_CF_TRUE_COLOR"
+                    "LV_COLOR_FORMAT_NATIVE"
                 }
 
         val obj =
                 """
-const lv_img_dsc_t face_${name}_${asset}_${a} = {
-    .header.always_zero = 0,
+const lv_image_dsc_t face_${name}_${asset}_${a} = {
+    .header.magic = LV_IMAGE_HEADER_MAGIC,
     .header.w = $width,
     .header.h = $height,
     .data_size = sizeof(face_${name}_${asset}_data_${a}),
@@ -814,8 +814,8 @@ const lv_img_dsc_t face_${name}_${asset}_${a} = {
 
 var lvItem =
         """
-    {{CHILD}} = lv_img_create({{PARENT}});
-    lv_img_set_src({{CHILD}}, ZSW_LV_IMG_USE({{RESOURCE}}));
+    {{CHILD}} = lv_image_create({{PARENT}});
+    lv_image_set_src({{CHILD}}, ZSW_LV_IMG_USE({{RESOURCE}}));
     lv_obj_set_width({{CHILD}}, LV_SIZE_CONTENT);
     lv_obj_set_height({{CHILD}}, LV_SIZE_CONTENT);
     lv_obj_set_x({{CHILD}}, {{CHILD_X}});
@@ -842,7 +842,6 @@ var c_file =
 
 LOG_MODULE_REGISTER(watchface_{{NAME}}, LOG_LEVEL_WRN);
 
-static lv_obj_t *face_{{NAME}};
 static lv_obj_t *face_{{NAME}} = NULL;
 static watchface_app_evt_listener ui_{{NAME}}_evt_cb;
 
@@ -914,6 +913,9 @@ static void watchface_{{NAME}}_set_datetime(int day_of_week, int date, int day, 
     if (!face_{{NAME}}) {
         return;
     }
+    
+    // Month parameter is 0-11, but we want to show 1-12 in UI.
+    month += 1;
 
 {{TIME}}
 }
@@ -984,8 +986,8 @@ static void watchface_{{NAME}}_set_watch_env_sensors(int temperature, int humidi
 void watchface_{{NAME}}_show(watchface_app_evt_listener evt_cb, zsw_settings_watchface_t *settings) {
     ui_{{NAME}}_evt_cb = evt_cb;
 
-    lv_obj_clear_flag(lv_scr_act(), LV_OBJ_FLAG_SCROLLABLE);
-    face_{{NAME}} = lv_obj_create(lv_scr_act());
+    lv_obj_clear_flag(lv_screen_active(), LV_OBJ_FLAG_SCROLLABLE);
+    face_{{NAME}} = lv_obj_create(lv_screen_active());
     watchface_{{NAME}}_invalidate_cached();
 
     lv_obj_clear_flag(face_{{NAME}}, LV_OBJ_FLAG_SCROLLABLE);
