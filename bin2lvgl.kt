@@ -263,6 +263,8 @@ fun extractComponents(data: ByteArray, name: String, wd: Int = 240, ht: Int = 24
     var lvUpdateHealth = ""
     var weatherIc = "const void *face_${name}_weather[] = {\n"
     var connIC = "const void *face_${name}_connection[] = {\n"
+    val timeUnits = linkedSetOf<String>()
+    val activityUnits = linkedSetOf<String>()
 
     // loop through the components
     myLoop@ for (x in 0 until no) {
@@ -498,10 +500,10 @@ fun extractComponents(data: ByteArray, name: String, wd: Int = 240, ht: Int = 24
                             lvUpdateTime +=
 """
     if (getPlaceValue(last_${unit}, $place) != getPlaceValue(${unit}, $place)) {
-        last_${unit} = setPlaceValue(last_${unit}, $place, getPlaceValue(${unit}, $place));
         lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);
     }
 """
+                        timeUnits.add(unit)
 
                     }
                     2 -> {
@@ -519,10 +521,10 @@ fun extractComponents(data: ByteArray, name: String, wd: Int = 240, ht: Int = 24
                         lvUpdateActivity +=
 """
     if (getPlaceValue(last_${unit}, $place) != getPlaceValue(${unit}, $place)) {
-        last_${unit} = setPlaceValue(last_${unit}, $place, getPlaceValue(${unit}, $place));
         lv_img_set_src(face_${name}_${x}_${clt}, face_${name}_${z}_${clt}_group[${lvT}]);
     }
 """
+                        activityUnits.add(unit)
                     }
                     4 -> {
                         lvUpdateHealth +=
@@ -603,6 +605,15 @@ fun extractComponents(data: ByteArray, name: String, wd: Int = 240, ht: Int = 24
 
     saveAsset(bufferBytes(scaledCanvas), 160, 160, false, 1, name, "preview")
     declare += "ZSW_LV_IMG_DECLARE(face_${name}_preview_0);\n"
+
+    if (timeUnits.isNotEmpty()) {
+        lvUpdateTime += "\n"
+        lvUpdateTime += timeUnits.joinToString(separator = "\n") { u -> "    last_${u} = ${u};" }
+    }
+    if (activityUnits.isNotEmpty()) {
+        lvUpdateActivity += "\n"
+        lvUpdateActivity += activityUnits.joinToString(separator = "\n") { u -> "    last_${u} = ${u};" }
+    }
 
     c_file =
             c_file.replace("{{NAME}}", name.toLowerCase())
@@ -858,17 +869,14 @@ static int last_kcal = -1;
 
 {{RSC_ARR}}
 static int32_t getPlaceValue(int32_t num, int32_t place) {
+    if (num < 0) {
+        return -1;
+    }
+
     int32_t divisor = 1;
     for (uint32_t i = 1; i < place; i++)
         divisor *= 10;
     return (num / divisor) % 10;
-}
-
-static int32_t setPlaceValue(int32_t num, int32_t place, int32_t newValue) {
-    int32_t divisor = 1;
-    for (uint32_t i = 1; i < place; i++)
-        divisor *= 10;
-    return num - ((num / divisor) % 10 * divisor) + (newValue * divisor);
 }
 
 static void watchface_{{NAME}}_remove(void)
