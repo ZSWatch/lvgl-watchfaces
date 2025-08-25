@@ -743,7 +743,8 @@ const LV_ATTRIBUTE_MEM_ALIGN uint8_t face_${name}_${asset}_data_${a}[] = {
 """
         var text = asset_header.replace("{{NAME}}", name.toLowerCase())
 
-        var bts = "\t"
+        var colors = "\t"
+        var alphas = "\t"
         var z = 0
         for (y in 0 until height) {
             for (x in 0 until width) {
@@ -758,23 +759,24 @@ const LV_ATTRIBUTE_MEM_ALIGN uint8_t face_${name}_${asset}_data_${a}[] = {
                 // Set the alpha channel to 0 for black color
                 val alpha = if (r == 0 && g == 0 && b == 0 && tr) 0 else 255
 
-                var hex =
+                colors +=
                         String.format(
                                 "0x%02X,0x%02X,",
-                                rgb565[j * 2 + 1].toInt() and 0xFF,
-                                rgb565[j * 2].toInt() and 0xFF
+                                rgb565[j * 2].toInt() and 0xFF,
+                                rgb565[j * 2 + 1].toInt() and 0xFF
                         )
                 if (tr) {
-                    hex = String.format("0x%02X,", alpha and 0xFF) + hex
+                    alphas += String.format("0x%02X,", alpha and 0xFF)
                 }
                 if (z % 32 == 0 && z != 0) {
-                    hex += "\n\t"
+                    colors += "\n\t"
+                    alphas += "\n\t"
                 }
-                bts += hex
+                
                 z++
             }
         }
-
+        val bts = if (tr) colors + "\n\t" + alphas else colors
         dat = dat.replace("{{BYTES}}", bts)
 
         text += dat
